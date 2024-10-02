@@ -9,8 +9,8 @@ public class UI {
         System.out.println("====================================================");
         System.out.println("         Enter a number to select an option         ");
         System.out.println("====================================================");
-        System.out.println("  Press 1 for : See the list of contracts           ");
-        System.out.println("  Press 2 for : See the list of cars                ");
+        System.out.println("  Press 1 for : See the list of contracts           "); //DONE
+        System.out.println("  Press 2 for : See the list of cars                "); //DONE
         System.out.println("  Press 3 for : See the list of customers           ");
         System.out.println("  Press 4 for : Make a new contract                 ");
         System.out.println("  Press 5 for : Edit a car                          ");

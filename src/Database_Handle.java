@@ -5,10 +5,12 @@ public class Database_Handle {
 
 
     public static Connection con;
-    public static final String car_type = "com.mysql.jdbc.car_type";
+    /*public static final String car_type = "com.mysql.jdbc.car_type";
     public static final String car = "com.mysql.jdbc.car";
     public static final String contracts = "com.mysql.jdbc.contracts";
-    public static final String customers = "com.mysql.jdbc.customers";
+    public static final String customers = "com.mysql.jdbc.customers";*/
+
+    public static final String KailuaCarRental = "com.mysql.jdbc.KailuaCarRental";
     public static final String DATABASE_URL = "jdbc:mysql://localhost:3306/kailuacarrental";
     static String bruger = "root";
     static String password = "Ma2404ro@@@@";
