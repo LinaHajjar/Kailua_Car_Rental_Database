@@ -1,5 +1,7 @@
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Database_Handle {
@@ -103,20 +105,53 @@ public class Database_Handle {
 
         System.out.println("what is the license plate");
         String regNb=input.nextLine();
-        System.out.println("what is the Rental start date? year-month-day");
-        LocalDate rental_start_date=LocalDate.parse(input.nextLine());
+
+        System.out.println("what is the Rental start date? year-month-day hour:minutes:seconds");
+        String rentalStartDate=input.nextLine();
+        // Parse the rental end date string into a LocalDateTime object
+        LocalDateTime rental_Start_Date = LocalDateTime.parse(rentalStartDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        // Convert LocalDateTime to java.sql.Timestamp for database storage
+        Timestamp rental_start_date = Timestamp.valueOf(rental_Start_Date);
+
         System.out.println("what is the Rental end date? year-month-day");
-        LocalDate rental_end_date=LocalDate.parse(input.nextLine());
+        String rentalEndDate=input.nextLine();
+        // Parse the rental end date string into a LocalDateTime object
+        LocalDateTime rental_End_Date = LocalDateTime.parse(rentalEndDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        // Convert LocalDateTime to java.sql.Timestamp for database storage
+        Timestamp rental_end_date = Timestamp.valueOf(rental_End_Date);
+
+
         System.out.println("How much do you expect to drive during the rental period");
         int maxKm=input.nextInt();
         input.nextLine();
+
+        String insertContractSQL = "INSERT INTO contracts (contract_number, customer_Id, regNb, rental_start_date, rental_end_date, maxKm) VALUES (?, ?, ?, ?, ?, ?)";
+
         try{
-            con=DriverManager.getConnection (DATABASE_URL, bruger, password);
-            Statement s= con.createStatement();
-            ResultSet rs = s.executeQuery("INSERT INTO contracts VALUES ( contract_number, customer_Id, regNb, rental_start_date, rental_end_date, maxKm)");
-        }catch (SQLException e){
-            System.out.println(e.getMessage());
+            Connection con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            PreparedStatement pstmt = con.prepareStatement(insertContractSQL);
+
+            // Set parameters for the query
+            pstmt.setInt(1, contract_number);
+            pstmt.setInt(2, customer_Id);
+            pstmt.setString(3, regNb);
+            pstmt.setTimestamp(4, rental_start_date);
+            pstmt.setTimestamp(5, rental_end_date);
+            pstmt.setInt(6, maxKm);
+
+            // Execute the insert query
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("The new contract has been added successfully to the database.");
+            } else {
+                System.out.println("Failed to insert the contract.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
         }
+
+        input.close();
 
     }//end of makeNewContract
 

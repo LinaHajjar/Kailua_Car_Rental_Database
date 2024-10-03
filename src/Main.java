@@ -11,9 +11,9 @@ import java.util.Scanner;
         public class Main {
 
 
-            static Scanner scan = new Scanner(System.in);
 
             public static void main(String[] args) throws  SQLException{
+                Scanner scan = new Scanner(System.in);
 
                 boolean program = true;
 
@@ -21,6 +21,7 @@ import java.util.Scanner;
                     UI.HovedMenu();
 
                     int choice = scan.nextInt();
+                    scan.nextLine();
 
                     switch (choice){
                         case 1: //see list of contracts
@@ -50,17 +51,13 @@ import java.util.Scanner;
                         case 9: //Delete a contract
 
                             break;
-                        case 10: //end the program
-
+                        case 10://end the program
+                            System.exit(0);
                             break;
                         default:
                             System.out.println("Invalid choice");
                             break;
                     }
-
-
-
                 }
-
             }
         }
