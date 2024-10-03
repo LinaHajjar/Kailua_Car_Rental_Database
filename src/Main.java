@@ -30,7 +30,7 @@ import java.util.Scanner;
                             Database_Handle.seeCarTypes();
                             break;
                         case 3: //see the list of costumers
-
+                            Database_Handle.seeListCustomers();
                             break;
                         case 4: //make a new contract
 
