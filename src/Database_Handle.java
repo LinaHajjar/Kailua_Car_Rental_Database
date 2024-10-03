@@ -61,17 +61,17 @@ public class Database_Handle {
     }//end of seeCarTypes
 
     public static void seeListCustomers() throws SQLException {
-        try{
+        try {
             con = DriverManager.getConnection(DATABASE_URL, bruger, password);
-            Statement s= con.createStatement();
-            ResultSet rs=s.executeQuery("SELECT * FROM customers");
+            Statement s = con.createStatement();
+            ResultSet rs = s.executeQuery("SELECT * FROM customers");
 
-            while (rs.next()){
+            while (rs.next()) {
                 System.out.println("Customer ID          : " + rs.getInt("customer_Id"));
                 System.out.println("Customer Name        : " + rs.getString("customer_name"));
                 System.out.println("Customer Address     : " + rs.getString("customer_address"));
-                System.out.println("Zip code and City    : " + rs.getInt("zip_code")+ " " + rs.getString("city"));
-                System.out.println("Customer Phone Number: "+ rs.getString("mobil_nr"));
+                System.out.println("Zip code and City    : " + rs.getInt("zip_code") + " " + rs.getString("city"));
+                System.out.println("Customer Phone Number: " + rs.getString("mobil_nr"));
                 System.out.println("Customer Email       : " + rs.getString("email"));
                 System.out.println("Driver Licence Number: " + rs.getString("driversLicence_Nb"));
                 System.out.println("driver since         : " + rs.getDate("driver_since"));
@@ -79,7 +79,7 @@ public class Database_Handle {
                 System.out.println();
             }
 
-        }catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
 
         }
@@ -91,30 +91,30 @@ public class Database_Handle {
         Scanner input = new Scanner(System.in);
 
         System.out.println("what is the number of this new contract?");
-        int contract_number=input.nextInt();
+        int contract_number = input.nextInt();
         System.out.println("what is the customer Id");
-        int customer_Id=input.nextInt();
+        int customer_Id = input.nextInt();
         input.nextLine();
 
-        if(customerExists(customer_Id)){
+        if (customerExists(customer_Id)) {
             System.out.println("your customer already exists, the customer will be added automatically to the new contract");
-        }else{
+        } else {
             System.out.println("your customer doen't exists in your database, you will be now asked to add the information about your new customer:");
             addCustomer();
         }
 
         System.out.println("what is the license plate");
-        String regNb=input.nextLine();
+        String regNb = input.nextLine();
 
         System.out.println("what is the Rental start date? year-month-day hour:minutes:seconds");
-        String rentalStartDate=input.nextLine();
+        String rentalStartDate = input.nextLine();
         // Parse the rental end date string into a LocalDateTime object
         LocalDateTime rental_Start_Date = LocalDateTime.parse(rentalStartDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         // Convert LocalDateTime to java.sql.Timestamp for database storage
         Timestamp rental_start_date = Timestamp.valueOf(rental_Start_Date);
 
         System.out.println("what is the Rental end date? year-month-day");
-        String rentalEndDate=input.nextLine();
+        String rentalEndDate = input.nextLine();
         // Parse the rental end date string into a LocalDateTime object
         LocalDateTime rental_End_Date = LocalDateTime.parse(rentalEndDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         // Convert LocalDateTime to java.sql.Timestamp for database storage
@@ -122,12 +122,12 @@ public class Database_Handle {
 
 
         System.out.println("How much do you expect to drive during the rental period");
-        int maxKm=input.nextInt();
+        int maxKm = input.nextInt();
         input.nextLine();
 
         String insertContractSQL = "INSERT INTO contracts (contract_number, customer_Id, regNb, rental_start_date, rental_end_date, maxKm) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try{
+        try {
             Connection con = DriverManager.getConnection(DATABASE_URL, bruger, password);
             PreparedStatement pstmt = con.prepareStatement(insertContractSQL);
 
@@ -173,28 +173,28 @@ public class Database_Handle {
     public static void addCustomer() throws SQLException {
         Scanner input = new Scanner(System.in);
         System.out.println("what is the ID of the new customer? ");
-        int customer_Id=input.nextInt();
+        int customer_Id = input.nextInt();
         System.out.println("what is the name of the new customer? ");
-        String customer_name=input.nextLine();
+        String customer_name = input.nextLine();
         System.out.println("what is the name of the new customer? ");
-        String customer_address=input.nextLine();
+        String customer_address = input.nextLine();
         System.out.println("what is the zip code? ");
-        int zip_code=input.nextInt();
+        int zip_code = input.nextInt();
         System.out.println("the city? ");
-        String city=input.nextLine();
+        String city = input.nextLine();
         System.out.println("and the country? ");
-        String country=input.nextLine();
+        String country = input.nextLine();
         System.out.println("what is the phone number of your new customer? ");
-        String mobil_nr=input.nextLine();
+        String mobil_nr = input.nextLine();
         System.out.println("what is the email of your customer? ");
-        String email=input.nextLine();
+        String email = input.nextLine();
         System.out.println("what is the driver's licence number? ");
-        String driversLicence_Nb=input.nextLine();
+        String driversLicence_Nb = input.nextLine();
         System.out.println("your customer has drived since: ");
-        LocalDate driver_since=LocalDate.parse(input.nextLine());
+        LocalDate driver_since = LocalDate.parse(input.nextLine());
 
 
-        try{
+        try {
             Connection con = DriverManager.getConnection(DATABASE_URL, bruger, password);
             Statement s = con.createStatement();
             ResultSet rs = s.executeQuery("INSERT INTO customers VALUES (customer_Id, customer_name, customer_address, zip_code, city, country, mobil_nr, email, driversLicence_Nb, driver_since)");
@@ -203,6 +203,80 @@ public class Database_Handle {
         }
     }//end of add customer
 
+    public static void seeContractPeriod() throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+
+        try {
+            // Prompt the user for the rental start and end date
+            System.out.println("Please enter the time period you'd like to search for contracts.");
+            System.out.print("Enter the start date (format: yyyy-mm-dd): ");
+            String startDateInput = scanner.nextLine();
+            System.out.print("Enter the end date (format: yyyy-mm-dd): ");
+            String endDateInput = scanner.nextLine();
+
+            // Parse the dates
+            Date rentalStartDate = Date.valueOf(startDateInput);
+            Date rentalEndDate = Date.valueOf(endDateInput);
+
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            Statement s = con.createStatement();
+
+            String query = "SELECT contract_number, customer_id, rental_start_date, rental_end_date " +
+                    "FROM contracts " +
+                    "WHERE rental_start_date >= '" + rentalStartDate + "' AND rental_end_date <= '" + rentalEndDate + "'";
+
+            ResultSet rs = s.executeQuery(query);
+
+            // Check if there are any contracts within the specified period
+            boolean hasContracts = false;
+
+            System.out.println("\nContracts from " + rentalStartDate + " to " + rentalEndDate + ":");
+
+            // Display the contract details
+            while (rs.next()) {
+                hasContracts = true;
+                System.out.println("--------------------------------------------");
+                System.out.println("Contract Number: " + rs.getInt("contract_number"));
+                System.out.println("Customer ID: " + rs.getInt("customer_id"));
+                System.out.println("Rental Start Date: " + rs.getDate("rental_start_date"));
+                System.out.println("Rental End Date: " + rs.getDate("rental_end_date"));
+                System.out.println("--------------------------------------------");
+            }
+
+            // If no contracts were found within the period
+            if (!hasContracts) {
+                System.out.println("No contracts were found within the specified period.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+
+        }
+
+    }
+
+    public static void deleteContract() throws SQLException{
+
+        Scanner scanner = new Scanner(System.in);
+
+        try{
+            System.out.println("Which contract number would you like to delete?");
+            int contractNumber = scanner.nextInt();
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            Statement s = con.createStatement();
+            int rowsAffected = s.executeUpdate("DELETE FROM contracts WHERE contract_number = " + contractNumber);
+
+            if(rowsAffected > 0){
+                System.out.println("contract number: " + contractNumber + " was deleted.");
+            } else{
+                System.out.println("contract number: " + contractNumber + " was not found.");
+            }
+
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
 
 }
-
