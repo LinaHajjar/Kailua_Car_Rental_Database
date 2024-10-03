@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.time.LocalDate;
+import java.util.Scanner;
 
 public class Database_Handle {
 
@@ -80,6 +82,91 @@ public class Database_Handle {
 
         }
     }//end of seeListCustomers
+
+
+    // method: make a new contract:
+    public static void makeNewContract() throws SQLException {
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("what is the number of this new contract?");
+        int contract_number=input.nextInt();
+        System.out.println("what is the customer Id");
+        int customer_Id=input.nextInt();
+        input.nextLine();
+
+        if(customerExists(customer_Id)){
+            System.out.println("your customer already exists, the customer will be added automatically to the new contract");
+        }else{
+            System.out.println("your customer doen't exists in your database, you will be now asked to add the information about your new customer:");
+            addCustomer();
+        }
+
+        System.out.println("what is the license plate");
+        String regNb=input.nextLine();
+        System.out.println("what is the Rental start date? year-month-day");
+        LocalDate rental_start_date=LocalDate.parse(input.nextLine());
+        System.out.println("what is the Rental end date? year-month-day");
+        LocalDate rental_end_date=LocalDate.parse(input.nextLine());
+        System.out.println("How much do you expect to drive during the rental period");
+        int maxKm=input.nextInt();
+        input.nextLine();
+        try{
+            con=DriverManager.getConnection (DATABASE_URL, bruger, password);
+            Statement s= con.createStatement();
+            ResultSet rs = s.executeQuery("INSERT INTO contracts VALUES ( contract_number, customer_Id, regNb, rental_start_date, rental_end_date, maxKm)");
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+    }//end of makeNewContract
+
+    //method to check if a customer exists in my database:
+    public static boolean customerExists(int customer_Id) {
+        try {
+            Connection con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            Statement s = con.createStatement();
+            ResultSet rs = s.executeQuery("SELECT 1 FROM customers WHERE customer_Id = " + customer_Id);
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return false;
+    }//end of costumerExists
+
+
+    // method to add a new cutomer: addCustomer()
+    public static void addCustomer() throws SQLException {
+        Scanner input = new Scanner(System.in);
+        System.out.println("what is the ID of the new customer? ");
+        int customer_Id=input.nextInt();
+        System.out.println("what is the name of the new customer? ");
+        String customer_name=input.nextLine();
+        System.out.println("what is the name of the new customer? ");
+        String customer_address=input.nextLine();
+        System.out.println("what is the zip code? ");
+        int zip_code=input.nextInt();
+        System.out.println("the city? ");
+        String city=input.nextLine();
+        System.out.println("and the country? ");
+        String country=input.nextLine();
+        System.out.println("what is the phone number of your new customer? ");
+        String mobil_nr=input.nextLine();
+        System.out.println("what is the email of your customer? ");
+        String email=input.nextLine();
+        System.out.println("what is the driver's licence number? ");
+        String driversLicence_Nb=input.nextLine();
+        System.out.println("your customer has drived since: ");
+        LocalDate driver_since=LocalDate.parse(input.nextLine());
+
+
+        try{
+            Connection con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            Statement s = con.createStatement();
+            ResultSet rs = s.executeQuery("INSERT INTO customers VALUES (customer_Id, customer_name, customer_address, zip_code, city, country, mobil_nr, email, driversLicence_Nb, driver_since)");
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }//end of add customer
 
 
 }

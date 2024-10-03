@@ -33,7 +33,7 @@ import java.util.Scanner;
                             Database_Handle.seeListCustomers();
                             break;
                         case 4: //make a new contract
-
+                            Database_Handle.makeNewContract();
                             break;
                         case 5://edit a car
 
