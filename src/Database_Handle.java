@@ -7,12 +7,12 @@ import java.util.Scanner;
 public class Database_Handle {
 
     public static Connection con;
-    /*public static final String car_type = "com.mysql.jdbc.car_type";
+    public static final String car_type = "com.mysql.jdbc.car_type";
     public static final String car = "com.mysql.jdbc.car";
     public static final String contracts = "com.mysql.jdbc.contracts";
-    public static final String customers = "com.mysql.jdbc.customers";*/
+    public static final String customers = "com.mysql.jdbc.customers";
 
-    public static final String KailuaCarRental = "com.mysql.jdbc.KailuaCarRental";
+   // public static final String KailuaCarRental = "com.mysql.jdbc.KailuaCarRental";
     public static final String DATABASE_URL = "jdbc:mysql://localhost:3306/kailuacarrental";
     static String bruger = "root";
     static String password = "Ma2404ro@@@@";
@@ -106,54 +106,48 @@ public class Database_Handle {
         System.out.println("what is the license plate");
         String regNb = input.nextLine();
 
-        System.out.println("what is the Rental start date? year-month-day hour:minutes:seconds");
-        String rentalStartDate = input.nextLine();
-        // Parse the rental end date string into a LocalDateTime object
-        LocalDateTime rental_Start_Date = LocalDateTime.parse(rentalStartDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        // Convert LocalDateTime to java.sql.Timestamp for database storage
-        Timestamp rental_start_date = Timestamp.valueOf(rental_Start_Date);
+        System.out.println("lets start with the beginning");
+        System.out.println("whats the year");
+        int startYear = input.nextInt();
+        System.out.println("month?");
+        int startMonth = input.nextInt();
+        System.out.println("day?");
+        int startDay = input.nextInt();
 
-        System.out.println("what is the Rental end date? year-month-day hour:minutes:seconds");
-        String rentalEndDate = input.nextLine();
-        // Parse the rental end date string into a LocalDateTime object
-        LocalDateTime rental_End_Date = LocalDateTime.parse(rentalEndDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        // Convert LocalDateTime to java.sql.Timestamp for database storage
-        Timestamp rental_end_date = Timestamp.valueOf(rental_End_Date);
 
+        String startDate = startYear + "-" + startMonth + "-" + startDay + " 00:00:00";
+
+        System.out.println("end date now");
+        System.out.println("whats the year");
+        int endYear = input.nextInt();
+        System.out.println("month?");
+        int endMonth = input.nextInt();
+        System.out.println("day?");
+        int endDay = input.nextInt();
+
+        String endDate = endYear + "-" + endMonth + "-" + endDay + " 00:00:00";
 
         System.out.println("How much do you expect to drive during the rental period");
         int maxKm = input.nextInt();
         input.nextLine();
 
-        String insertContractSQL = "INSERT INTO contracts (contract_number, customer_Id, regNb, rental_start_date, rental_end_date, maxKm) VALUES (?, ?, ?, ?, ?, ?)";
-
+        //String insertContractSQL = "INSERT INTO contracts (contract_number, customer_Id, regNb, rental_start_date, rental_end_date, maxKm) VALUES (cont)";
         try {
-            Connection con = DriverManager.getConnection(DATABASE_URL, bruger, password);
-            PreparedStatement pstmt = con.prepareStatement(insertContractSQL);
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
 
-            // Set parameters for the query
-            pstmt.setInt(1, contract_number);
-            pstmt.setInt(2, customer_Id);
-            pstmt.setString(3, regNb);
-            pstmt.setTimestamp(4, rental_start_date);
-            pstmt.setTimestamp(5, rental_end_date);
-            pstmt.setInt(6, maxKm);
+            Statement s = con.createStatement();
+            int addingRow = s.executeUpdate("INSERT INTO contracts (contract_number, customer_Id, regNb, rental_start_date, rental_end_date, maxKm)\n" +
+                    "VALUES (" + contract_number + ", " + customer_Id + ", '" + regNb + "', '" + startDate + "', '" + endDate + "', " + maxKm + ");");
 
-            // Execute the insert query
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("The new contract has been added successfully to the database.");
-            } else {
-                System.out.println("Failed to insert the contract.");
-            }
+            System.out.println("succesfully added row");
 
-        } catch (SQLException e) {
-            System.out.println("SQL Error: " + e.getMessage());
+
+        } catch (SQLException sqlex) {
+            System.out.println("SQL Error: " + sqlex.getMessage());
+            con.close();
         }
 
-        input.close();
-
-    }//end of makeNewContract
+    }
 
     //method to check if a customer exists in my database:
     public static boolean customerExists(int customer_Id) {
@@ -190,7 +184,7 @@ public class Database_Handle {
         String email = input.nextLine();
         System.out.println("what is the driver's licence number? ");
         String driversLicence_Nb = input.nextLine();
-        System.out.println("your customer has drived since: ");
+        System.out.println("your customer has drived since: (insert a date with fom: year-month-day)");
         LocalDate driver_since = LocalDate.parse(input.nextLine());
 
 
@@ -275,8 +269,40 @@ public class Database_Handle {
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
+    }
+
+
+    public static void searchContract(int id) throws SQLException{
+
+        try{
+
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            Statement s = con.createStatement();
+            ResultSet rs = s.executeQuery("SELECT *\n" +
+                    "FROM contracts\n" +
+                    "where contract_number = " + id + ";");
+                while (rs.next()) {
+                    System.out.println("Contract number: " + rs.getInt("contract_number"));
+                    System.out.println("Customer_id: " + rs.getInt("customer_id"));
+                    System.out.println("License-plate: " + rs.getString("regNb"));
+                    System.out.println("Rental start date: " + rs.getDate("rental_start_date"));
+                    System.out.println("Rental end date: " + rs.getDate("rental_end_date"));
+                    System.out.println("Maximum Kilometer driven: " + rs.getInt("maxKm"));
+                    System.out.println();
+                }
+
+
+
+        } catch (SQLException sqlex){
+            System.out.println(sqlex.getMessage());
+            con.close();
+        }
+
+
 
     }
+
+
 
 
 }

@@ -27,33 +27,46 @@ import java.util.Scanner;
                         case 1: //see list of contracts
                         Database_Handle.seeContracts();
                             break;
+
                         case 2: //see the list of cars
                             Database_Handle.seeCarTypes();
                             break;
+
                         case 3: //see the list of costumers
                             Database_Handle.seeListCustomers();
                             break;
+
                         case 4: //make a new contract
                             Database_Handle.makeNewContract();
                             break;
-                        case 5://edit a car
+
+                        case 5://edit a car (odometer)
 
                             break;
-                        case 6: //Edit a contract
+
+                        case 6: //Edit a contract (end date)
 
                             break;
+
                         case 7: //Search contract
-
+                            System.out.println("whats the contract number");
+                            int id = scan.nextInt();
+                            Database_Handle.searchContract(id);
                             break;
-                        case 8: //see contract for a time period
+
+                        case 8:
                             Database_Handle.seeContractPeriod();
                             break;
-                        case 9: //Delete a contract
+
+                        case 9:
                             Database_Handle.deleteContract();
                             break;
-                        case 10://end the program
+
+                        case 10:
+                            program = false;
                             System.exit(0);
                             break;
+                            
                         default:
                             System.out.println("Invalid choice");
                             break;
