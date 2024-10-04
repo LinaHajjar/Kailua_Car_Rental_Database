@@ -46,10 +46,10 @@ import java.util.Scanner;
 
                             break;
                         case 8: //see contract for a time period
-
+                            Database_Handle.seeContractPeriod();
                             break;
                         case 9: //Delete a contract
-
+                            Database_Handle.deleteContract();
                             break;
                         case 10://end the program
                             System.exit(0);
