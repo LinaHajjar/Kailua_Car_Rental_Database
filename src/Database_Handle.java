@@ -113,7 +113,7 @@ public class Database_Handle {
         // Convert LocalDateTime to java.sql.Timestamp for database storage
         Timestamp rental_start_date = Timestamp.valueOf(rental_Start_Date);
 
-        System.out.println("what is the Rental end date? year-month-day");
+        System.out.println("what is the Rental end date? year-month-day hour:minutes:seconds");
         String rentalEndDate = input.nextLine();
         // Parse the rental end date string into a LocalDateTime object
         LocalDateTime rental_End_Date = LocalDateTime.parse(rentalEndDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
