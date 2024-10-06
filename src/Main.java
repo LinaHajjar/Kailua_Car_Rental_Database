@@ -41,11 +41,11 @@ import java.util.Scanner;
                             break;
 
                         case 5://edit a car (odometer)
-
+                            Database_Handle.edit_Car();
                             break;
 
                         case 6: //Edit a contract (end date)
-
+                            Database_Handle.edit_Contract();
                             break;
 
                         case 7: //Search contract

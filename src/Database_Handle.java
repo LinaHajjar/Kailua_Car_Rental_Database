@@ -106,8 +106,8 @@ public class Database_Handle {
         System.out.println("what is the license plate");
         String regNb = input.nextLine();
 
-        System.out.println("lets start with the beginning");
-        System.out.println("whats the year");
+        System.out.println("let's start with the start date of the rental periode:");
+        System.out.println("what's the year?");
         int startYear = input.nextInt();
         System.out.println("month?");
         int startMonth = input.nextInt();
@@ -117,8 +117,8 @@ public class Database_Handle {
 
         String startDate = startYear + "-" + startMonth + "-" + startDay + " 00:00:00";
 
-        System.out.println("end date now");
-        System.out.println("whats the year");
+        System.out.println("now, the end date of the rental periode");
+        System.out.println("what's the year?");
         int endYear = input.nextInt();
         System.out.println("month?");
         int endMonth = input.nextInt();
@@ -168,12 +168,14 @@ public class Database_Handle {
         Scanner input = new Scanner(System.in);
         System.out.println("what is the ID of the new customer? ");
         int customer_Id = input.nextInt();
+        input.nextLine();
         System.out.println("what is the name of the new customer? ");
         String customer_name = input.nextLine();
-        System.out.println("what is the name of the new customer? ");
+        System.out.println("what is the address of the new customer? ");
         String customer_address = input.nextLine();
         System.out.println("what is the zip code? ");
         int zip_code = input.nextInt();
+        input.nextLine();
         System.out.println("the city? ");
         String city = input.nextLine();
         System.out.println("and the country? ");
@@ -189,12 +191,19 @@ public class Database_Handle {
 
 
         try {
-            Connection con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
             Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("INSERT INTO customers VALUES (customer_Id, customer_name, customer_address, zip_code, city, country, mobil_nr, email, driversLicence_Nb, driver_since)");
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
+            int addingRow = s.executeUpdate("INSERT INTO customers (customer_Id, customer_name, customer_address, zip_code, city, country, mobil_nr, email, driversLicence_Nb, driver_since)\n" +
+                    "VALUES (" + customer_Id + ", '" + customer_name + "', '" + customer_address + "', " + zip_code + ", '" + city + "', '" + country + "' , '" + mobil_nr + "', '" + email + "' , '" + driversLicence_Nb + "', '"+driver_since+"');");
+
+            System.out.println("succesfully added customer");
+
+
+        } catch (SQLException sqlex) {
+            System.out.println("SQL Error: " + sqlex.getMessage());
+            con.close();
         }
+
     }//end of add customer
 
     public static void seeContractPeriod() throws SQLException {
@@ -230,10 +239,10 @@ public class Database_Handle {
             while (rs.next()) {
                 hasContracts = true;
                 System.out.println("--------------------------------------------");
-                System.out.println("Contract Number: " + rs.getInt("contract_number"));
-                System.out.println("Customer ID: " + rs.getInt("customer_id"));
-                System.out.println("Rental Start Date: " + rs.getDate("rental_start_date"));
-                System.out.println("Rental End Date: " + rs.getDate("rental_end_date"));
+                System.out.println("Contract Number    : " + rs.getInt("contract_number"));
+                System.out.println("Customer ID        : " + rs.getInt("customer_id"));
+                System.out.println("Rental Start Date  : " + rs.getDate("rental_start_date"));
+                System.out.println("Rental End Date    : " + rs.getDate("rental_end_date"));
                 System.out.println("--------------------------------------------");
             }
 
@@ -244,10 +253,9 @@ public class Database_Handle {
 
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
-
         }
 
-    }
+    }// end of seeContractPeriod
 
     public static void deleteContract() throws SQLException{
 
@@ -269,40 +277,76 @@ public class Database_Handle {
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-    }
+    } // end of deleteContract
 
 
     public static void searchContract(int id) throws SQLException{
 
         try{
-
             con = DriverManager.getConnection(DATABASE_URL, bruger, password);
             Statement s = con.createStatement();
             ResultSet rs = s.executeQuery("SELECT *\n" +
                     "FROM contracts\n" +
                     "where contract_number = " + id + ";");
                 while (rs.next()) {
-                    System.out.println("Contract number: " + rs.getInt("contract_number"));
-                    System.out.println("Customer_id: " + rs.getInt("customer_id"));
-                    System.out.println("License-plate: " + rs.getString("regNb"));
-                    System.out.println("Rental start date: " + rs.getDate("rental_start_date"));
-                    System.out.println("Rental end date: " + rs.getDate("rental_end_date"));
-                    System.out.println("Maximum Kilometer driven: " + rs.getInt("maxKm"));
+                    System.out.println("Contract number           : " + rs.getInt("contract_number"));
+                    System.out.println("Customer_id               : " + rs.getInt("customer_id"));
+                    System.out.println("License-plate             : " + rs.getString("regNb"));
+                    System.out.println("Rental start date         : " + rs.getDate("rental_start_date"));
+                    System.out.println("Rental end date           : " + rs.getDate("rental_end_date"));
+                    System.out.println("Maximum Kilometer driven  : " + rs.getInt("maxKm"));
                     System.out.println();
                 }
-
-
 
         } catch (SQLException sqlex){
             System.out.println(sqlex.getMessage());
             con.close();
         }
+    } // end of searchContract
 
 
+    public static void edit_Car() throws SQLException{
 
-    }
+        Scanner scan = new Scanner(System.in);
+        System.out.println("what is the registration number of the car for which you want to change the odometer?");
+        String regNb = scan.nextLine();
 
+        System.out.println("what is the new value of the odometer?");
+        int odometer = scan.nextInt();
+        scan.nextLine();
 
+        try {
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            Statement s = con.createStatement();
+            int addingRow = s.executeUpdate("UPDATE car SET odometer= " + odometer + " WHERE (regNb= '" +regNb +"')");
+            System.out.println("Odometer successfully updated with the new value: " + odometer);
 
+        } catch (SQLException sqlex) {
+            System.out.println("SQL Error: " + sqlex.getMessage());
+            con.close();
+        }
+    }//end of edit_car
+
+    public static void edit_Contract()throws SQLException{
+
+        Scanner scan = new Scanner(System.in);
+        System.out.println("what is the Id number of the contract?");
+        int id = scan.nextInt();
+        scan.nextLine();
+
+        System.out.println("what is the new date of returning the car?");
+        String endDate = scan.nextLine() + " 00:00:00";
+
+        try {
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            Statement s = con.createStatement();
+            int addingRow = s.executeUpdate("UPDATE contracts SET rental_end_date= '" + endDate + "' WHERE (contract_number= " +id +")");
+            System.out.println("end date successfully updated with the new value: " + endDate);
+
+        } catch (SQLException sqlex) {
+            System.out.println("SQL Error: " + sqlex.getMessage());
+            con.close();
+        }
+    }//end of edit_car
 
 }
