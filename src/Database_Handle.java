@@ -11,6 +11,7 @@ public class Database_Handle {
     public static final String car = "com.mysql.jdbc.car";
     public static final String contracts = "com.mysql.jdbc.contracts";
     public static final String customers = "com.mysql.jdbc.customers";
+    static Scanner scan = new Scanner(System.in);
 
    // public static final String KailuaCarRental = "com.mysql.jdbc.KailuaCarRental";
     public static final String DATABASE_URL = "jdbc:mysql://localhost:3306/kailuacarrental";
@@ -58,6 +59,37 @@ public class Database_Handle {
         } catch (SQLException sqlex) {
             System.out.println(sqlex.getMessage());
         }
+
+        System.out.println("what type would you like to see");
+        System.out.println("type 1 for luxury");
+        System.out.println("type 2 for family");
+        System.out.println("type 3 for sport");
+        int carChoice = scan.nextInt();
+        scan.nextLine();
+
+        try {
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            Statement s = con.createStatement();
+            ResultSet rs = s.executeQuery("SELECT * FROM car\n" +
+                    "WHERE car_id = " + carChoice + ";");
+
+            while (rs.next()) {
+                System.out.println("car_id: " + rs.getInt("car_id"));
+                System.out.println("License-plate: " + rs.getString("regNb"));
+                System.out.println("brand: " + rs.getString("brand"));
+                System.out.println("Model: " + rs.getString("model"));
+                System.out.println("first registration date: " + rs.getDate("firstRegistrationDate"));
+                System.out.println("odometer: " + rs.getInt("odometer"));
+
+
+                System.out.println();
+            }
+        } catch (SQLException sqlex) {
+            System.out.println(sqlex.getMessage());
+        }
+
+
+
     }//end of seeCarTypes
 
     public static void seeListCustomers() throws SQLException {
@@ -147,6 +179,8 @@ public class Database_Handle {
             con.close();
         }
 
+        //input.close();
+
     }
 
     //method to check if a customer exists in my database:
@@ -196,7 +230,7 @@ public class Database_Handle {
             int addingRow = s.executeUpdate("INSERT INTO customers (customer_Id, customer_name, customer_address, zip_code, city, country, mobil_nr, email, driversLicence_Nb, driver_since)\n" +
                     "VALUES (" + customer_Id + ", '" + customer_name + "', '" + customer_address + "', " + zip_code + ", '" + city + "', '" + country + "' , '" + mobil_nr + "', '" + email + "' , '" + driversLicence_Nb + "', '"+driver_since+"');");
 
-            System.out.println("succesfully added customer");
+            System.out.println("succesfully added customers information to database");
 
 
         } catch (SQLException sqlex) {
