@@ -16,7 +16,7 @@ public class Database_Handle {
    // public static final String KailuaCarRental = "com.mysql.jdbc.KailuaCarRental";
     public static final String DATABASE_URL = "jdbc:mysql://localhost:3306/kailuacarrental";
     static String bruger = "root";
-    static String password = "Ma2404ro@@@@";
+    static String password = "cat6white";
 
     public static void seeContracts() throws SQLException {
 
@@ -314,31 +314,6 @@ public class Database_Handle {
     } // end of deleteContract
 
 
-    public static void searchContract(int id) throws SQLException{
-
-        try{
-            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
-            Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT *\n" +
-                    "FROM contracts\n" +
-                    "where contract_number = " + id + ";");
-                while (rs.next()) {
-                    System.out.println("Contract number           : " + rs.getInt("contract_number"));
-                    System.out.println("Customer_id               : " + rs.getInt("customer_id"));
-                    System.out.println("License-plate             : " + rs.getString("regNb"));
-                    System.out.println("Rental start date         : " + rs.getDate("rental_start_date"));
-                    System.out.println("Rental end date           : " + rs.getDate("rental_end_date"));
-                    System.out.println("Maximum Kilometer driven  : " + rs.getInt("maxKm"));
-                    System.out.println();
-                }
-
-        } catch (SQLException sqlex){
-            System.out.println(sqlex.getMessage());
-            con.close();
-        }
-    } // end of searchContract
-
-
     public static void edit_Car() throws SQLException{
 
         Scanner scan = new Scanner(System.in);
@@ -382,5 +357,47 @@ public class Database_Handle {
             con.close();
         }
     }//end of edit_car
+
+
+
+
+        public static void searchContract(int id) throws SQLException{
+
+
+        try{
+            con = DriverManager.getConnection(DATABASE_URL, bruger, password);
+            PreparedStatement stmt = con.prepareStatement("SELECT *\n" +
+                    "FROM contracts\n" +
+                    "where contract_number = ?");
+            stmt.setInt(1, id);
+            ResultSet rs  = stmt.executeQuery();
+
+                boolean found = false;
+
+
+            try{
+                while (rs.next()){
+                    System.out.println("contract number           : " + rs.getInt("contract_number"));
+                    System.out.println("Customer_id               : " + rs.getInt("customer_id"));
+                    System.out.println("License-plate             : " + rs.getString("regNb"));
+                    System.out.println("Rental start date         : " + rs.getDate("rental_start_date"));
+                    System.out.println("Rental end date           : " + rs.getDate("rental_end_date"));
+                    System.out.println("Maximum Kilometer driven  : " + rs.getInt("maxKm"));
+                    System.out.println();
+
+                    found = true;
+                }
+
+            } catch(SQLException sqlex){
+                System.out.println("did not find the contract number" + sqlex.getMessage());
+            }
+
+        } catch (SQLException sqlex){
+            System.out.println(sqlex.getMessage());
+            con.close();
+        }
+    } // end of searchContract
+
+
 
 }
